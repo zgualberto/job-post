@@ -1,0 +1,14 @@
+{
+  "name": "job-post-workspace",
+  "private": true,
+  "workspaces": [
+    "api",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently \"yarn workspace api start:dev\" \"yarn workspace client dev\" \"maildev\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

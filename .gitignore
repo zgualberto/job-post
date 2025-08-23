@@ -1,0 +1,5 @@
+/api/dist
+/api/node_modules
+/client/.quasar
+/client/node_modules
+/node_modules
