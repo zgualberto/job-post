@@ -46,8 +46,8 @@ export class JobAdController {
   @Patch(':id/moderate')
   async moderate(
     @Param('id') id: number,
-    @Query('token') token: string,
-    @Query('action') action: 'Approve' | 'Reject',
+    @Body('token') token: string,
+    @Body('action') action: 'Approve' | 'Reject',
   ): Promise<JobAd | null> {
     return this.jobAdService.moderate(id, token, action);
   }

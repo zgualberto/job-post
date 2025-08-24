@@ -38,7 +38,6 @@ export class CreateJobAdDto {
 
   @IsNotEmpty()
   @IsString()
-  @Type(() => String)
   yearsOfExperience: string;
 
   @ValidateNested({ each: true })

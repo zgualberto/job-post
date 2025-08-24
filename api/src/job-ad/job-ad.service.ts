@@ -6,6 +6,10 @@ import { Repository } from 'typeorm';
 import { CreateJobAdDto } from './dto/create.dto';
 import { Moderator } from '../database/entities/moderator.entity';
 
+const PUBLISHED = 1;
+const DRAFT = 2;
+const REJECTED = 4;
+
 @Injectable()
 export class JobAdService {
   // load job-ad repository
@@ -21,7 +25,7 @@ export class JobAdService {
   async findAll(): Promise<JobAd[]> {
     return this.jobAdRepository.find({
       where: {
-        job_ad_action_id: 1,
+        job_ad_action_id: PUBLISHED,
       },
     });
   }
@@ -72,7 +76,7 @@ export class JobAdService {
       where: {
         id,
         token,
-        job_ad_action_id: 2,
+        job_ad_action_id: DRAFT,
       },
     });
     if (!jobAd) {
@@ -82,7 +86,7 @@ export class JobAdService {
     // Here you can add your moderation logic
     // For example, you might want to check the token or update the job ad status
 
-    jobAd.job_ad_action_id = action === 'Approve' ? 1 : 4;
+    jobAd.job_ad_action_id = action === 'Approve' ? PUBLISHED : REJECTED;
     jobAd.token = null;
     await this.jobAdRepository.save(jobAd);
 
@@ -99,6 +103,33 @@ export class JobAdService {
 
   // create a job ad
   async create(jobAd: CreateJobAdDto): Promise<{ message: string }> {
+    // check if user based on email has published job ads
+    const existingJobAds = await this.jobAdRepository.find({
+      where: {
+        email: jobAd.email,
+        job_ad_action_id: PUBLISHED,
+      },
+    });
+
+    if (existingJobAds.length > 0) {
+      const newJobAd = this.jobAdRepository.create({
+        ...jobAd,
+        metadata: JSON.stringify({
+          jobDescriptions: {
+            jobDescription: jobAd.jobDescriptions,
+          },
+          createdAt: new Date(),
+        }),
+        token: null,
+        job_ad_action_id: 1,
+      });
+
+      await this.jobAdRepository.save(newJobAd);
+
+      return {
+        message: 'Job ad created successfully',
+      };
+    }
     const newJobAd = this.jobAdRepository.create({
       ...jobAd,
       metadata: JSON.stringify({
@@ -108,7 +139,7 @@ export class JobAdService {
         createdAt: new Date(),
       }),
       token: this.generateToken(),
-      job_ad_action_id: 2,
+      job_ad_action_id: DRAFT,
     });
     await this.jobAdRepository.save(newJobAd);
 

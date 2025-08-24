@@ -116,6 +116,7 @@ const jobAd = ref<JobAd>({
 
 const createJobAd = async () => {
   await jobAdStore.createJobAd(jobAd.value);
+  void $router.push({ name: 'list' });
 };
 
 const addJobAdRow = () => {

@@ -140,7 +140,12 @@ describe('JobAdService', () => {
   });
 
   it('should create a job ad and notify moderators', async () => {
-    const dto: CreateJobAdDto = { jobDescriptions: 'desc' } as any;
+    const dto: CreateJobAdDto = {
+      jobDescriptions: 'desc',
+      email: 'unique@example.com',
+    } as any;
+    // Simulate no published job ads for this email
+    (jobAdRepository.find as jest.Mock).mockResolvedValueOnce([]);
     await expect(service.create(dto)).resolves.toEqual({
       message: 'Job ad created successfully',
     });
@@ -153,6 +158,31 @@ describe('JobAdService', () => {
       ['mod@example.com'],
       expect.anything(),
     );
+  });
+
+  it('should automatically publish a new job ad if user has a published job ad', async () => {
+    // Simulate that the user already has a published job ad
+    (jobAdRepository.find as jest.Mock).mockResolvedValueOnce([
+      { ...mockJobAd, job_ad_action_id: 1, email: 'test@example.com' },
+    ]);
+    const dto: CreateJobAdDto = {
+      jobDescriptions: 'desc',
+      email: 'test@example.com',
+    } as any;
+    await expect(service.create(dto)).resolves.toEqual({
+      message: 'Job ad created successfully',
+    });
+    // Should be published (job_ad_action_id: 1) and token should be null
+    expect(jobAdRepository.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ...dto,
+        job_ad_action_id: 1,
+        token: null,
+      }),
+    );
+    expect(jobAdRepository.save).toHaveBeenCalled();
+    // Should NOT send moderator notification
+    expect(mailerService.sendModeratorNotification).not.toHaveBeenCalled();
   });
 
   it('should handle error when creating a job ad', async () => {
