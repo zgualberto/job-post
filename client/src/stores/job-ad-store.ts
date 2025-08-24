@@ -1,3 +1,4 @@
+import type { AxiosError } from 'axios';
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import { api } from 'src/boot/axios';
@@ -42,17 +43,23 @@ export const useJobAdStore = defineStore('jobAd', {
     },
     async createJobAd(jobAdData: Partial<JobAd>) {
       try {
+        console.log(jobAdData);
         const response = await api.post('job-ads', jobAdData);
         this.jobAds.push(response.data);
         Notify.create({
           message: 'Job ad created successfully',
           type: 'positive',
         });
-      } catch {
-        Notify.create({
-          message: 'Error creating job ad',
-          type: 'negative',
-        });
+      } catch (error) {
+        const axiosErrors = error as AxiosError;
+        console.log(axiosErrors.response?.data);
+        // for (const [message] of Object.entries(axiosErrors.response?.data?.messages || {})) {
+        //   Notify.create({
+        //     message: message,
+        //     type: 'negative',
+        //     position: 'top-right',
+        //   });
+        // }
       }
     },
   },

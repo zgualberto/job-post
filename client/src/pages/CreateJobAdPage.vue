@@ -35,16 +35,34 @@
         dense
         v-model="jobAd.yearsOfExperience"
         label="Years of Experience"
-        type="number"
+        type="text"
         :rules="[(val: string) => !!val || 'Field is required']"
       />
       <q-card flat bordered class="q-pa-md q-gutter-sm">
         <div class="q-pb-sm">Job Description</div>
         <q-card-section class="q-pa-none">
-          <div v-for="(desc, index) in jobAd.jobDescription" :key="index" class="q-mb-md q-gutter-sm">
-            <q-input outlined flat dense v-model="desc.name" label="Job Description Title" :rules="[(val: string) => !!val || 'Field is required']" />
+          <div v-for="(desc, index) in jobAd.jobDescriptions" :key="index" class="q-mb-md">
+            <q-input
+              outlined
+              flat
+              dense
+              v-model="desc.name"
+              label="Job Description Title"
+              :rules="[(val: string) => !!val || 'Field is required']"
+            />
             <!-- Editor should also be required -->
-            <q-editor v-model="desc.value" min-height="5rem" />
+            <q-editor
+              v-model="desc.value"
+              min-height="5rem"
+              :fonts="['Arial', 'Courier New', 'Georgia', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana']"
+              :toolbar="[
+                ['bold', 'italic', 'underline', 'strike'],
+                ['left', 'center', 'right'],
+                ['quote', 'unordered', 'ordered'],
+                ['link'],
+                ['undo', 'redo'],
+              ]"
+            />
           </div>
         </q-card-section>
         <!-- Action Buttons -->
@@ -53,14 +71,14 @@
           <q-btn
             type="button"
             icon="remove"
-            @click="removeJobAdRow(jobAd.jobDescription.length - 1)"
+            @click="removeJobAdRow(jobAd.jobDescriptions.length - 1)"
             flat
-            :disable="jobAd.jobDescription.length <= 1"
+            :disable="jobAd.jobDescriptions.length <= 1"
           />
         </q-card-actions>
       </q-card>
       <div class="actions row justify-end">
-        <q-btn type="submit" label="Save" />
+        <q-btn color="primary" type="submit" icon="save" />
       </div>
     </q-form>
   </div>
@@ -85,7 +103,7 @@ interface JobAd {
   office: string;
   email: string;
   yearsOfExperience: string;
-  jobDescription: JobDescription[];
+  jobDescriptions: JobDescription[];
 }
 
 const jobAd = ref<JobAd>({
@@ -93,7 +111,7 @@ const jobAd = ref<JobAd>({
   office: '',
   email: '',
   yearsOfExperience: '',
-  jobDescription: [{ name: '', value: '' }],
+  jobDescriptions: [{ name: '', value: '' }],
 });
 
 const createJobAd = async () => {
@@ -102,14 +120,13 @@ const createJobAd = async () => {
 
 const addJobAdRow = () => {
   // Logic to add another job description row can be implemented here
-  console.log('Add another job description row');
-  jobAd.value.jobDescription.push({
+  jobAd.value.jobDescriptions.push({
     name: '',
     value: ''
   });
 };
 
 const removeJobAdRow = (index: number) => {
-  jobAd.value.jobDescription.splice(index, 1);
+  jobAd.value.jobDescriptions.splice(index, 1);
 };
 </script>

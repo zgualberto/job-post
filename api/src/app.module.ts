@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConsoleModule } from 'nestjs-console';
@@ -11,9 +12,13 @@ import { MRGEGroupGMBHJobAdFetchService } from './task/mrge-group-gmbh-job-ad-fe
 import { ScheduleModule } from '@nestjs/schedule';
 import { JobAd } from 'database/entities/job-ad.entity';
 import { JobAdModule } from './job-ad/job-ad.module';
+import { AppMailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ConsoleModule,
     JobAdModule,
     ScheduleModule.forRoot(),

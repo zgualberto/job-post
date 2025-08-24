@@ -15,8 +15,8 @@ export class JobAd {
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  office: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  office: string | null;
 
   @Column({ default: false })
   is_external: boolean;
@@ -25,14 +25,17 @@ export class JobAd {
   external_name: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  email: string;
+  email: string | null;
 
-  @Column('bigint')
-  external_id: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  token: string | null;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  external_id: string | null;
 
   @Column({ type: 'int', default: 2 })
   job_ad_action_id: number;
 
-  @Column({ type: 'text' })
-  metadata: string;
+  @Column({ type: 'text', nullable: true })
+  metadata: string | null;
 }

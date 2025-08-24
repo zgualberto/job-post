@@ -1,6 +1,17 @@
 import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { JobDescription } from 'interfaces/mrge-group-gmbh-job-ad-xml.interface';
+
+class JobDescription {
+  @IsNotEmpty()
+  @IsString()
+  @Type(() => String)
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Type(() => String)
+  value: string;
+}
 
 export class CreateJobAdDto {
   @IsNotEmpty()
@@ -26,5 +37,5 @@ export class CreateJobAdDto {
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  jobDescription: JobDescription[];
+  jobDescriptions: JobDescription[];
 }
