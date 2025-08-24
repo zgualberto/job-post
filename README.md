@@ -68,7 +68,7 @@ This will start:
    cd client
    yarn quasar dev
    ```
-   The app will run on `http://localhost:8080` by default.
+   The app will run on `http://localhost:9000` by default.
 
 ### Database
 - The default database is SQLite, located at `api/database.sqlite`.
