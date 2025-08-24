@@ -34,8 +34,7 @@ export class CreateJobAdDto {
   @Type(() => String)
   yearsOfExperience: string;
 
-  @IsNotEmpty()
-  @IsArray()
   @ValidateNested({ each: true })
+  @Type(() => JobDescription)
   jobDescriptions: JobDescription[];
 }
