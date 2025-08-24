@@ -4,15 +4,12 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConsoleModule } from 'nestjs-console';
-import { ModeratorSeeder } from 'database/seeders/moderator.seeder';
-import { Moderator } from 'database/entities/moderator.entity';
-import { JobAdActionSeeder } from 'database/seeders/job-ad-action.seeder';
-import { JobAdAction } from 'database/entities/job-ad-action.entity';
 import { MRGEGroupGMBHJobAdFetchService } from './task/mrge-group-gmbh-job-ad-fetch.service';
 import { ScheduleModule } from '@nestjs/schedule';
-import { JobAd } from 'database/entities/job-ad.entity';
+import { JobAd } from './database/entities/job-ad.entity';
 import { JobAdModule } from './job-ad/job-ad.module';
-import { AppMailerModule } from './mailer/mailer.module';
+import { Moderator } from './database/entities/moderator.entity';
+import { ModeratorSeeder } from './database/seeders/moderator.seeder';
 
 @Module({
   imports: [
@@ -30,14 +27,9 @@ import { AppMailerModule } from './mailer/mailer.module';
       entities: ['../database/entities/**/*.ts'],
       migrations: ['../database/migrations/**/*.ts'],
     }),
-    TypeOrmModule.forFeature([JobAdAction, JobAd, Moderator]),
+    TypeOrmModule.forFeature([JobAd, Moderator]),
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    ModeratorSeeder,
-    JobAdActionSeeder,
-    MRGEGroupGMBHJobAdFetchService,
-  ],
+  providers: [AppService, ModeratorSeeder, MRGEGroupGMBHJobAdFetchService],
 })
 export class AppModule {}

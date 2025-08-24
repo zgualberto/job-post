@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
-import { JobAd } from 'database/entities/job-ad.entity';
+import { JobAd } from '../database/entities/job-ad.entity';
 import { JobAdXmlRoot } from 'interfaces/mrge-group-gmbh-job-ad-xml.interface';
 import { Repository } from 'typeorm';
 import * as xml2js from 'xml2js';

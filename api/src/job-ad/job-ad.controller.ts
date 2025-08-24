@@ -1,5 +1,13 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { JobAd } from 'database/entities/job-ad.entity';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { JobAd } from '../database/entities/job-ad.entity';
 import { JobAdService } from './job-ad.service';
 import { CreateJobAdDto } from './dto/create.dto';
 
@@ -21,7 +29,26 @@ export class JobAdController {
 
   // Create Job ad
   @Post()
-  async create(@Body() dto: CreateJobAdDto): Promise<JobAd> {
+  async create(@Body() dto: CreateJobAdDto): Promise<{ message: string }> {
     return this.jobAdService.create(dto);
+  }
+
+  // Get moderate Job ad
+  @Get(':id/moderate')
+  async getModerateJobAdById(
+    @Param('id') id: number,
+    @Query('token') token: string,
+  ): Promise<JobAd | null> {
+    return this.jobAdService.getModerateJobAdById(id, token);
+  }
+
+  // Moderate Job ad
+  @Patch(':id/moderate')
+  async moderate(
+    @Param('id') id: number,
+    @Query('token') token: string,
+    @Query('action') action: 'Approve' | 'Reject',
+  ): Promise<JobAd | null> {
+    return this.jobAdService.moderate(id, token, action);
   }
 }

@@ -17,6 +17,7 @@ export const useJobAdStore = defineStore('jobAd', {
   state: () => ({
     jobAds: [] as JobAd[],
     currentJobAd: null as JobAd | null,
+    jobAdForModeration: null as JobAd | null,
   }),
   actions: {
     async fetchJobAds() {
@@ -41,9 +42,21 @@ export const useJobAdStore = defineStore('jobAd', {
         });
       }
     },
+    async fetchJobAdForModeration(id: number, token: string) {
+      try {
+        const response = await api.get(`job-ads/${id}/moderate`, {
+          params: { token },
+        });
+        this.jobAdForModeration = response.data;
+      } catch {
+        Notify.create({
+          message: 'Error fetching job ad for moderation',
+          type: 'negative',
+        });
+      }
+    },
     async createJobAd(jobAdData: Partial<JobAd>) {
       try {
-        console.log(jobAdData);
         const response = await api.post('job-ads', jobAdData);
         this.jobAds.push(response.data);
         Notify.create({
@@ -51,15 +64,50 @@ export const useJobAdStore = defineStore('jobAd', {
           type: 'positive',
         });
       } catch (error) {
-        const axiosErrors = error as AxiosError;
-        console.log(axiosErrors.response?.data);
-        // for (const [message] of Object.entries(axiosErrors.response?.data?.messages || {})) {
-        //   Notify.create({
-        //     message: message,
-        //     type: 'negative',
-        //     position: 'top-right',
-        //   });
-        // }
+        const axiosErrors = error as Partial<AxiosError>;
+        const messages =
+          (axiosErrors.response?.data as { message?: string[] } | undefined)?.message ?? undefined;
+        for (const message of messages || ['Error creating job ad']) {
+          Notify.create({
+            message,
+            type: 'negative',
+            position: 'top-right',
+          });
+        }
+      }
+    },
+    async moderateJobAd(id: number, action: 'Approve' | 'Reject', token: string) {
+      try {
+        if (!this.jobAdForModeration) {
+          Notify.create({
+            message: 'No job ad to moderate',
+            type: 'negative',
+          });
+          return;
+        }
+
+        await api.patch(`job-ads/${this.jobAdForModeration.id}/moderate`, {
+          token,
+          action,
+        });
+
+        this.jobAdForModeration = null;
+
+        Notify.create({
+          message: `Job ad ${action.toLowerCase()}d successfully`,
+          type: 'positive',
+        });
+      } catch (error) {
+        const axiosErrors = error as Partial<AxiosError>;
+        const messages =
+          (axiosErrors.response?.data as { message?: string[] } | undefined)?.message ?? undefined;
+        for (const message of messages || ['Error moderating job ad']) {
+          Notify.create({
+            message,
+            type: 'negative',
+            position: 'top-right',
+          });
+        }
       }
     },
   },

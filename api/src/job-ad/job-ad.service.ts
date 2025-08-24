@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { MailerService } from '../mailer/mailer.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { JobAd } from 'database/entities/job-ad.entity';
+import { JobAd } from '../database/entities/job-ad.entity';
 import { Repository } from 'typeorm';
 import { CreateJobAdDto } from './dto/create.dto';
-import { Moderator } from 'database/entities/moderator.entity';
+import { Moderator } from '../database/entities/moderator.entity';
 
 @Injectable()
 export class JobAdService {
@@ -40,8 +40,65 @@ export class JobAdService {
     return jobAd;
   }
 
+  // moderate job ad by id
+  async getModerateJobAdById(id: number, token: string): Promise<JobAd | null> {
+    const jobAd = await this.jobAdRepository.findOne({
+      where: {
+        id,
+        token,
+        job_ad_action_id: 2,
+      },
+    });
+    if (!jobAd) {
+      throw new NotFoundException(`Job ad with ID ${id} not found`);
+    }
+
+    // Here you can add your moderation logic
+    // For example, you might want to check the token or update the job ad status
+
+    return {
+      ...jobAd,
+      token: null,
+    };
+  }
+
+  // moderate job ad action
+  async moderate(
+    id: number,
+    token: string,
+    action: 'Approve' | 'Reject',
+  ): Promise<JobAd | null> {
+    const jobAd = await this.jobAdRepository.findOne({
+      where: {
+        id,
+        token,
+        job_ad_action_id: 2,
+      },
+    });
+    if (!jobAd) {
+      throw new NotFoundException(`Job ad with ID ${id} not found`);
+    }
+
+    // Here you can add your moderation logic
+    // For example, you might want to check the token or update the job ad status
+
+    jobAd.job_ad_action_id = action === 'Approve' ? 1 : 4;
+    jobAd.token = null;
+    await this.jobAdRepository.save(jobAd);
+
+    if (jobAd.email) {
+      await this.mailerService.sendJobAdStatusNotification(
+        jobAd.email,
+        jobAd,
+        action === 'Approve' ? 'Approved' : 'Rejected',
+      );
+    }
+
+    return jobAd;
+  }
+
   // create a job ad
-  async create(jobAd: CreateJobAdDto): Promise<JobAd> {
+  async create(jobAd: CreateJobAdDto): Promise<{ message: string }> {
     const newJobAd = this.jobAdRepository.create({
       ...jobAd,
       metadata: JSON.stringify({
@@ -69,7 +126,9 @@ export class JobAdService {
       newJobAd,
     );
 
-    return newJobAd;
+    return {
+      message: 'Job ad created successfully',
+    };
   }
 
   private generateToken(): string {

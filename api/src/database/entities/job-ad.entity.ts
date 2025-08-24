@@ -33,9 +33,23 @@ export class JobAd {
   @Column({ type: 'varchar', length: 255, nullable: true })
   external_id: string | null;
 
-  @Column({ type: 'int', default: 2 })
+  @Column({
+    type: 'int',
+    default: 2,
+    comment: '1 for Published, 2 for Draft, 3 for Archived, 4 for Denied',
+  })
   job_ad_action_id: number;
 
   @Column({ type: 'text', nullable: true })
   metadata: string | null;
+
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
+
+  @Column({
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  updated_at: Date;
 }
