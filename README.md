@@ -74,11 +74,22 @@ This will start:
 - The default database is SQLite, located at `api/database.sqlite`.
 - You can change the database configuration in `api/src/database/data-source.ts`.
 
+### Essential Seeders
+- The backend includes seeders for essential data, such as the admin moderator.
+- To seed the moderator table, run:
+  ```bash
+  cd api
+  yarn console seed:moderator
+  ```
+- This will create an admin moderator with email `admin@example.com` if it does not already exist.
+- You can add more seeders in `api/src/database/seeders/` as needed.
+
 ### Email (Dev SMTP)
 - The backend uses Nodemailer for sending emails.
+- **All email notifications are sent through the DEV SMTP server.**
 - For development, it uses a local SMTP server (MailDev or MailHog).
 - MailDev is started automatically with `yarn dev`.
-- Access the MailDev web interface at `http://localhost:1080` to view sent emails.
+- Access the MailDev web interface at `http://localhost:1080` to view all email notifications sent by the app.
 - Configure SMTP settings in `api/src/mailer/mailer.module.ts` if needed.
 
 ### Running Tests
@@ -90,6 +101,6 @@ yarn test
 ```
 
 ## Additional Notes
-- Job ads are fetched from external sources very hour via scheduled tasks (see `api/src/task/mrge-group-gmbh-job-ad-fetch.service.ts`).
+- Job ads are fetched from external sources every hour via scheduled tasks (see `api/src/task/mrge-group-gmbh-job-ad-fetch.service.ts`).
 - DTO validation is enforced using class-validator.
 - Coverage reports are generated in the `api/coverage` directory after running backend tests.
