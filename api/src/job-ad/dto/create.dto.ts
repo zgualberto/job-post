@@ -1,4 +1,10 @@
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsString,
+  ValidateNested,
+  IsEmail,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 class JobDescription {
@@ -26,6 +32,7 @@ export class CreateJobAdDto {
 
   @IsNotEmpty()
   @IsString()
+  @IsEmail()
   @Type(() => String)
   email: string;
 
