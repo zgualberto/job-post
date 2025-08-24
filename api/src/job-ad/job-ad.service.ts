@@ -28,7 +28,6 @@ export class JobAdService {
         id,
       },
     });
-
     if (!jobAd) {
       throw new NotFoundException(`Job ad with ID ${id} not found`);
     }
