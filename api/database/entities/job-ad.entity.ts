@@ -24,6 +24,9 @@ export class JobAd {
   @Column({ type: 'varchar', length: 255, default: 'system' })
   external_name: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  email: string;
+
   @Column('bigint')
   external_id: string;
 

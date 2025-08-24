@@ -1,7 +1,14 @@
 <template>
   <q-page>
     <div class="q-pa-md row q-gutter-sm">
-      <q-card flat bordered  v-for="(jobAd, key) in jobAds" :key="key" class="col-12">
+      <q-card
+        flat
+        bordered
+        v-for="(jobAd, key) in jobAds"
+        :key="key"
+        class="col-12 cursor-pointer"
+        @click="$router.push(`/${jobAd.id}`)"
+      >
         <q-card-section>
           <div class="text-subtitle2">{{ jobAd.name }}</div>
           <div class="text-caption">
@@ -17,6 +24,9 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import { useJobAdStore } from 'src/stores/job-ad-store';
+import { useRouter } from 'vue-router';
+
+const $router = useRouter();
 
 const jobAdStore = useJobAdStore();
 
